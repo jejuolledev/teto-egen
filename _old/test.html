@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>테스트 진행 중 - 테토 vs 애겐</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container test-container">
+    <!-- 프로그레스 바 -->
+    <div class="progress-wrapper">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <p class="progress-text">
+        <span id="currentQ">1</span> / <span id="totalQ">15</span>
+      </p>
+    </div>
+
+    <!-- 성별 선택 (첫 화면) -->
+    <div class="gender-selection" id="genderSelection">
+      <h2 class="question-title">먼저, 당신의 성별은?</h2>
+      <div class="gender-buttons">
+        <button class="gender-btn" onclick="selectGender('male')">
+          <span class="gender-emoji">👨</span>
+          <span class="gender-text">남자</span>
+        </button>
+        <button class="gender-btn" onclick="selectGender('female')">
+          <span class="gender-emoji">👩</span>
+          <span class="gender-text">여자</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 질문 영역 -->
+    <div class="question-section" id="questionSection" style="display: none;">
+      <div class="question-card">
+        <h2 class="question-title" id="questionText">질문이 여기 표시됩니다</h2>
+        
+        <div class="options" id="optionsContainer">
+          <!-- 동적으로 생성됨 -->
+        </div>
+      </div>
+
+      <!-- 뒤로가기 버튼 -->
+      <button class="back-btn" id="backBtn" onclick="previousQuestion()" style="display: none;">
+        ← 이전 질문
+      </button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { questions, calculateResult } from './questions.js';
+    
+    let currentQuestion = 0;
+    let answers = [];
+    let userGender = null;
+
+    // 전역으로 노출
+    window.questions = questions;
+    window.currentQuestion = currentQuestion;
+    window.answers = answers;
+    window.userGender = userGender;
+    
+    window.selectGender = function(gender) {
+      window.userGender = gender;
+      localStorage.setItem('userGender', gender);
+      
+      document.getElementById('genderSelection').style.display = 'none';
+      document.getElementById('questionSection').style.display = 'block';
+      
+      showQuestion();
+    };
+    
+    window.selectOption = function(score) {
+      window.answers[window.currentQuestion] = score;
+      
+      window.currentQuestion++;
+      
+      if (window.currentQuestion < questions.length) {
+        showQuestion();
+      } else {
+        // 테스트 완료, 결과 계산
+        const result = calculateResult(window.answers, window.userGender);
+        localStorage.setItem('testResult', JSON.stringify(result));
+        
+        // 광고 화면으로 이동
+        window.location.href = 'ad.html';
+      }
+    };
+    
+    window.previousQuestion = function() {
+      if (window.currentQuestion > 0) {
+        window.currentQuestion--;
+        showQuestion();
+      }
+    };
+    
+    function showQuestion() {
+      const q = questions[window.currentQuestion];
+      
+      // 진행률 업데이트
+      const progress = ((window.currentQuestion + 1) / questions.length) * 100;
+      document.getElementById('progressFill').style.width = progress + '%';
+      document.getElementById('currentQ').textContent = window.currentQuestion + 1;
+      document.getElementById('totalQ').textContent = questions.length;
+      
+      // 질문 텍스트
+      document.getElementById('questionText').textContent = q.question;
+      
+      // 선택지 생성
+      const optionsHtml = q.options.map((opt, idx) => `
+        <button class="option-btn" onclick="selectOption(${opt.score})">
+          ${opt.text}
+        </button>
+      `).join('');
+      
+      document.getElementById('optionsContainer').innerHTML = optionsHtml;
+      
+      // 뒤로가기 버튼 표시 여부
+      if (window.currentQuestion > 0) {
+        document.getElementById('backBtn').style.display = 'block';
+      } else {
+        document.getElementById('backBtn').style.display = 'none';
+      }
+    }
+  </script>
+</body>
+</html>

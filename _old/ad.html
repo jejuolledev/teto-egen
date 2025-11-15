@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>잠깐! 광고 후 결과 확인 - 테토 vs 애겐</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container ad-container">
+    <div class="ad-section">
+      <h2 class="ad-title">🎁 테스트 완료!</h2>
+      <p class="ad-subtitle">당신의 연애 성향이 분석되었어요</p>
+      
+      <div class="result-preview">
+        <div class="loading-animation">
+          <div class="loading-dot"></div>
+          <div class="loading-dot"></div>
+          <div class="loading-dot"></div>
+        </div>
+        <p class="preview-text">결과 분석 중...</p>
+      </div>
+
+      <div class="ad-info-box">
+        <p class="ad-info-title">💡 무료로 결과를 확인하려면?</p>
+        <p class="ad-info-desc">15초 광고 시청 후 바로 확인할 수 있어요</p>
+      </div>
+
+      <!-- 광고 영역 -->
+      <div class="ad-placeholder" id="adContainer">
+        <div class="ad-mock">
+          <p class="ad-mock-text">[ 광고 영역 ]</p>
+          <p class="ad-mock-small">여기에 실제 광고가 표시됩니다</p>
+          <p class="ad-mock-timer" id="adTimer">15초</p>
+        </div>
+      </div>
+
+      <!-- 광고 시청 후 활성화될 버튼 -->
+      <button class="view-result-btn disabled" id="viewResultBtn" disabled>
+        <span id="btnText">광고 시청 중... <span id="countdown">15</span>초</span>
+      </button>
+
+      <p class="ad-footer-text">
+        광고 수익은 무료 서비스 운영에 사용돼요 😊
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // 광고 타이머 (15초)
+    let countdown = 15;
+    const timer = setInterval(() => {
+      countdown--;
+      document.getElementById('countdown').textContent = countdown;
+      document.getElementById('adTimer').textContent = countdown + '초';
+      
+      if (countdown <= 0) {
+        clearInterval(timer);
+        enableResultButton();
+      }
+    }, 1000);
+
+    function enableResultButton() {
+      const btn = document.getElementById('viewResultBtn');
+      btn.classList.remove('disabled');
+      btn.disabled = false;
+      document.getElementById('btnText').innerHTML = '🎉 결과 확인하기';
+      
+      btn.onclick = () => {
+        window.location.href = 'result.html';
+      };
+      
+      // 버튼 강조 애니메이션
+      btn.classList.add('pulse');
+    }
+
+    // 실제 구현 시 Google AdSense 또는 다른 광고 SDK 사용
+    // 예시:
+    // - Google AdSense 보상형 광고
+    // - AdMob (모바일 웹)
+    // - 기타 광고 네트워크
+    
+    /*
+    // Google AdSense 보상형 광고 예시
+    window.adsbygoogle = window.adsbygoogle || [];
+    adsbygoogle.push({
+      google_ad_client: "ca-pub-XXXXXXXXXXXXXXXX",
+      enable_page_level_ads: true,
+      overlays: {bottom: true}
+    });
+    */
+  </script>
+</body>
+</html>
