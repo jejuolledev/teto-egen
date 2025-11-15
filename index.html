@@ -1125,7 +1125,7 @@
                 </div>
 
                 <div class="action-buttons">
-                    <button class="share-action-btn" onclick="toggleShareModal()">
+                    <button class="share-action-btn" onclick="shareResult()">
                         공유하기 🔗
                     </button>
                     <button class="restart-action-btn" onclick="restart()">
@@ -1295,6 +1295,28 @@
                 alert('링크가 복사되었습니다! 🎉');
                 closeShareModal();
             });
+        }
+
+        function shareResult() {
+            const resultData = calculateResult();   // 현재 내 타입 계산
+            const result = results[resultData.type];
+
+            // 공유용 문구 (원하는 대로 살짝 바꿔도 됨)
+            const shareText = `나는 ${result.title} (${result.subtitle}) 타입! ${result.emoji} ${result.shareText} 테토 vs 애겐 연애 성향 테스트 💘 👉 ${window.location.href}`;
+
+            if (navigator.share) {
+                // 모바일/브라우저 네이티브 공유
+                navigator.share({
+                    title: '테토 vs 애겐 연애 성향 테스트',
+                    text: shareText,
+                    url: window.location.href
+                }).catch(() => {});
+            } else {
+                // 네이티브 공유가 없으면 텍스트 복사
+                navigator.clipboard.writeText(shareText).then(() => {
+                    alert('결과가 클립보드에 복사되었습니다! 🎉');
+                });
+            }
         }
 
         // Safari bfcache 방지
